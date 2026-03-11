@@ -8,9 +8,11 @@ The website showcases an online shopping interface including product categories,
 🌐 Live Website
 
 🔗 https://ecommerce-websitehafi.netlify.app/
+
 📁 GitHub Repository
 
 🔗 https://github.com/Hafiza-sadia/ecommerce-frontend-design
+
 ⚙️ Technologies Used
 
 * React.js
