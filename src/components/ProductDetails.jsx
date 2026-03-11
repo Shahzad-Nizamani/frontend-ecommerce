@@ -243,12 +243,12 @@ const ProductDetails = ({ setPage }) => {
                   <h4 className="font-bold text-[#1C1C1C] mb-4">You may like</h4>
                   <div className="space-y-4">
                      {[thumb1, thumb2, thumb3, thumb4].map((img, i) => (
-                        <div key={i} className="flex items-center gap-4 group cursor-pointer">
-                           <div className="w-20 h-20 border border-[#DEE2E7] rounded-md p-2 flex items-center justify-center bg-white">
-                              <img src={img} alt="suggested" className="max-w-full max-h-full object-contain" />
+                        <div key={i} className="flex items-center gap-4 group cursor-pointer p-2 hover:bg-[#F7FAFC] rounded-lg transition-colors">
+                           <div className="w-20 h-20 border border-[#DEE2E7] rounded-md p-2 flex items-center justify-center bg-white group-hover:shadow-sm transition-shadow">
+                              <img src={img} alt="suggested" className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-300" />
                            </div>
                            <div className="flex flex-col">
-                              <span className="text-[#1C1C1C] text-sm font-normal group-hover:text-primary transition-colors line-clamp-1">Apple Watch Series Space Gray</span>
+                              <span className="text-[#1C1C1C] text-sm font-normal group-hover:text-primary transition-colors line-clamp-1 font-medium">Apple Watch Series Space Gray</span>
                               <span className="text-[#8B96A5] text-sm">$7.00 - $99.50</span>
                            </div>
                         </div>
@@ -270,12 +270,12 @@ const ProductDetails = ({ setPage }) => {
                   { tag: "Xiaomi Redmi 8 Original", price: "$32.00-$40.00", img: thumb1 },
                   { tag: "Xiaomi Redmi 8 Original", price: "$32.00-$40.00", img: thumb2 },
                ].map((item, i) => (
-                  <div key={i} className="flex flex-col gap-3">
-                     <div className="w-full aspect-square border border-[#DEE2E7] rounded-lg p-3 flex items-center justify-center bg-white group cursor-pointer hover:shadow-sm transition-shadow">
-                        <img src={item.img} alt="related" className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform" />
+                  <div key={i} className="flex flex-col gap-3 group">
+                     <div className="w-full aspect-square border border-[#DEE2E7] rounded-lg p-3 flex items-center justify-center bg-white cursor-pointer group-hover:shadow-[0px_4px_15px_rgba(0,0,0,0.08)] group-hover:-translate-y-1 transition-all duration-300">
+                        <img src={item.img} alt="related" className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-500" />
                      </div>
                      <div className="flex flex-col">
-                        <span className="text-[#505050] text-sm line-clamp-2 hover:text-primary transition-colors cursor-pointer">{item.tag}</span>
+                        <span className="text-[#505050] text-sm line-clamp-2 group-hover:text-primary transition-colors cursor-pointer">{item.tag}</span>
                         <span className="text-[#8B96A5] text-sm mt-1">{item.price}</span>
                      </div>
                   </div>

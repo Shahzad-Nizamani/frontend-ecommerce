@@ -90,6 +90,7 @@ function App() {
               bannerBg="#FFE6BF"
               bannerImg={homeBanner}
               items={homeAndOutdoorItems}
+              setPage={setCurrentPage}
             />
 
             <CategorySection
@@ -97,10 +98,11 @@ function App() {
               bannerBg="#E5F1FF"
               bannerImg={electronicsBanner}
               items={electronicsItems}
+              setPage={setCurrentPage}
             />
 
             <InquiryForm />
-            <RecommendedItems />
+            <RecommendedItems setPage={setCurrentPage} />
             <Services />
             <RegionSuppliers />
           </div>

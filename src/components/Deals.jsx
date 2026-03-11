@@ -1,12 +1,17 @@
 import React from 'react';
+import watchImg from '../assets/Image/tech/8.png';
+import laptopImg from '../assets/Image/tech/image 23.png';
+import goproImg from '../assets/Image/tech/image 29.png';
+import headphonesImg from '../assets/Image/tech/image 34.png';
+import canonImg from '../assets/Image/tech/image 85.png';
 
 const Deals = ({ setPage }) => {
   const deals = [
-    { name: "Smart watches", discount: "-25%", image: "src/assets/Image/tech/8.png" },
-    { name: "Laptops", discount: "-15%", image: "src/assets/Image/tech/image 23.png" },
-    { name: "GoPro cameras", discount: "-40%", image: "src/assets/Image/tech/image 29.png" },
-    { name: "Headphones", discount: "-25%", image: "src/assets/Image/tech/image 34.png" },
-    { name: "Canon cameras", discount: "-25%", image: "src/assets/Image/tech/image 85.png" },
+    { name: "Smart watches", discount: "-25%", image: watchImg },
+    { name: "Laptops", discount: "-15%", image: laptopImg },
+    { name: "GoPro cameras", discount: "-40%", image: goproImg },
+    { name: "Headphones", discount: "-25%", image: headphonesImg },
+    { name: "Canon cameras", discount: "-25%", image: canonImg },
   ];
 
   return (
@@ -28,11 +33,11 @@ const Deals = ({ setPage }) => {
       </div>
 
       {/* Deals Grid */}
-      <div className="flex-1 flex overflow-x-auto lg:overflow-visible">
+      <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 h-full">
         {deals.map((deal, index) => (
           <div
             key={index}
-            className="flex-1 min-w-[200px] p-6 flex flex-col items-center justify-center text-center border-r last:border-r-0 border-[#DEE2E7] cursor-pointer hover:shadow-lg transition-all group"
+            className="p-6 flex flex-col items-center justify-center text-center border-r border-b lg:border-b-0 last:border-r-0 border-[#DEE2E7] cursor-pointer hover:shadow-[0px_8px_20px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-300 group"
             onClick={() => setPage('details')}
           >
             <div className="w-full aspect-square bg-[#F7F7F7] rounded-md flex items-center justify-center mb-4 overflow-hidden p-2">

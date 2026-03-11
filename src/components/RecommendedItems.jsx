@@ -31,7 +31,10 @@ const RecommendedItems = () => {
       <h3 className="text-2xl font-bold mb-6">Recommended items</h3>
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
         {items.map((item, index) => (
-          <div key={index} className="bg-white border border-[#DEE2E7] rounded-lg p-4 flex flex-col hover:shadow-md transition-shadow cursor-pointer group h-full">
+          <div
+            key={index}
+            className="bg-white border border-[#DEE2E7] rounded-lg p-4 flex flex-col hover:shadow-[0px_10px_25px_rgba(0,0,0,0.1)] hover:-translate-y-2 transition-all duration-300 cursor-pointer group h-full"
+          >
             <div className="flex-1 flex items-center justify-center p-4 mb-3">
               <img src={item.image} alt={item.desc} className="max-h-[140px] w-auto object-contain group-hover:scale-110 transition-transform duration-300" />
             </div>

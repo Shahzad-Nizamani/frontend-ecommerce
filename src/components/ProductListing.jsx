@@ -337,7 +337,11 @@ const ProductListing = ({ setPage }) => {
             /* Product Grid View */
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {products.map((product) => (
-                <div key={product.id} className="bg-white border border-[#DEE2E7] rounded-lg p-4 hover:shadow-md transition-shadow group flex flex-col items-center cursor-pointer" onClick={() => setPage('details')}>
+                <div
+                  key={product.id}
+                  className="bg-white border border-[#DEE2E7] rounded-lg p-4 hover:shadow-[0px_8px_25px_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-300 group flex flex-col items-center cursor-pointer"
+                  onClick={() => setPage('details')}
+                >
                   {/* Product Image Area */}
                   <div className="w-full aspect-square flex items-center justify-center mb-4 bg-[#F7F7F7] rounded-md p-6 overflow-hidden">
                     <img src={product.image} alt={product.title} className="max-w-[85%] max-h-[85%] object-contain group-hover:scale-110 transition-transform duration-300" />

@@ -29,13 +29,13 @@ const RegionSuppliers = () => {
       <h3 className="text-2xl font-bold mb-6">Suppliers by region</h3>
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-x-12 gap-y-6">
         {regions.map((region, index) => (
-          <div key={index} className="flex items-center gap-3 cursor-pointer hover:opacity-70 group">
-            <div className="w-7 h-5 overflow-hidden rounded-sm shadow-sm">
-                <img src={region.flagImg} alt={region.name} className="w-full h-full object-cover" />
+          <div key={index} className="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-white hover:shadow-[0px_4px_15px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-300 group">
+            <div className="w-7 h-5 overflow-hidden rounded-sm shadow-sm flex-shrink-0">
+              <img src={region.flagImg} alt={region.name} className="w-full h-full object-cover" />
             </div>
             <div className="flex flex-col">
-               <span className="text-dark text-sm group-hover:text-primary transition-colors">{region.name}</span>
-               <span className="text-secondary text-xs opacity-60">{region.domain}</span>
+              <span className="text-dark text-sm group-hover:text-primary transition-colors font-medium">{region.name}</span>
+              <span className="text-secondary text-xs opacity-60">{region.domain}</span>
             </div>
           </div>
         ))}
