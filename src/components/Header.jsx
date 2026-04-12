@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Search, User, MessageSquare, Heart, ShoppingCart, Menu, ChevronDown } from 'lucide-react';
 import logo from '../assets/Layout/Brand/logo-colored.png';
 import flagDE from '../assets/Layout1/Image/flags/DE@2x.png';
 
 const Header = ({ setPage }) => {
+  const [query, setQuery] = useState('');
+
+  const handleSearch = () => {
+    setPage('listing', { q: query });
+  };
+
   return (
     <header className="bg-white border-b border-shade-border lg:sticky top-0 z-50 shadow-sm">
       {/* Top Header */}
@@ -16,6 +22,11 @@ const Header = ({ setPage }) => {
           <input
             type="text"
             placeholder="Search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleSearch();
+            }}
             className="flex-1 px-4 py-2 outline-none"
           />
           <div className="flex items-center border-l px-4 py-2 bg-white cursor-pointer hover:bg-gray-50">
@@ -24,13 +35,14 @@ const Header = ({ setPage }) => {
           </div>
           <button
             className="bg-primary hover:bg-primary-dark text-white px-8 py-2 font-medium transition-colors"
-            onClick={() => setPage('listing')}
+            onClick={handleSearch}
           >
             Search
           </button>
         </div>
 
         <div className="flex items-center gap-6">
+          <button className="text-xs px-3 py-1.5 border border-[#DEE2E7] rounded-md hover:bg-shade" onClick={() => setPage('add-product')}>Add Product</button>
           <div className="flex flex-col items-center cursor-pointer text-secondary hover:text-primary transition-colors" onClick={() => setPage('profile')}>
             <User className="w-5 h-5 mb-1" />
             <span className="text-xs">Profile</span>
@@ -60,7 +72,7 @@ const Header = ({ setPage }) => {
             </div>
             <a href="#" className="hover:text-primary transition-colors" onClick={(e) => { e.preventDefault(); setPage('listing'); }}>Hot offers</a>
             <a href="#" className="hover:text-primary transition-colors">Gift boxes</a>
-            <a href="#" className="hover:text-primary transition-colors">Projects</a>
+            <a href="#" className="hover:text-primary transition-colors" onClick={(e) => { e.preventDefault(); setPage('listing'); }}>Products</a>
             <a href="#" className="hover:text-primary transition-colors">Menu item</a>
             <div className="flex items-center gap-1 cursor-pointer hover:text-primary transition-colors">
               <span>Help</span>

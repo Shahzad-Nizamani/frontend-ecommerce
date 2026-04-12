@@ -3,7 +3,7 @@ import bannerImg from '../assets/Image/backgrounds/Banner-board-800x420 2.png';
 import promo1 from '../assets/Image/backgrounds/Group 969.png';
 import promo2 from '../assets/Image/backgrounds/Group 982.png';
 
-const Hero = () => {
+const Hero = ({ setPage }) => {
   const categories = [
     "Automobiles", "Clothes and wear", "Home interiors", "Computer and tech", 
     "Tools, equipments", "Sports and outdoor", "Animal and pets", "Machinery tools", "More category"
@@ -53,8 +53,18 @@ const Hero = () => {
                 <p className="text-dark text-sm">let's get started</p>
               </div>
             </div>
-            <button className="w-full bg-primary hover:bg-primary-dark text-white py-2 rounded-md mb-2 text-sm font-medium transition-colors">Join now</button>
-            <button className="w-full bg-white text-primary py-2 rounded-md text-sm font-medium border border-shade-border hover:bg-shade transition-colors">Log in</button>
+            <button
+              className="w-full bg-primary hover:bg-primary-dark text-white py-2 rounded-md mb-2 text-sm font-medium transition-colors"
+              onClick={() => setPage('signup')}
+            >
+              Join now
+            </button>
+            <button
+              className="w-full bg-white text-primary py-2 rounded-md text-sm font-medium border border-shade-border hover:bg-shade transition-colors"
+              onClick={() => setPage('login')}
+            >
+              Log in
+            </button>
           </div>
 
           {/* Promo 1 */}

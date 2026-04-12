@@ -1,18 +1,70 @@
-import React from 'react';
-import watchImg from '../assets/Image/tech/8.png';
-import laptopImg from '../assets/Image/tech/image 23.png';
-import goproImg from '../assets/Image/tech/image 29.png';
-import headphonesImg from '../assets/Image/tech/image 34.png';
-import canonImg from '../assets/Image/tech/image 85.png';
+import React, { useEffect, useState } from 'react';
 
-const Deals = ({ setPage }) => {
-  const deals = [
-    { name: "Smart watches", discount: "-25%", image: watchImg },
-    { name: "Laptops", discount: "-15%", image: laptopImg },
-    { name: "GoPro cameras", discount: "-40%", image: goproImg },
-    { name: "Headphones", discount: "-25%", image: headphonesImg },
-    { name: "Canon cameras", discount: "-25%", image: canonImg },
-  ];
+const HOME_PRODUCTS_API_URL = '/api/featured_products';
+const PRODUCT_DETAILS_BASE_URL = 'http://127.0.0.1:8000/products';
+
+const Deals = () => {
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState('');
+
+  useEffect(() => {
+    let isMounted = true;
+    const controller = new AbortController();
+
+    const loadProducts = async () => {
+      setIsLoading(true);
+      setLoadError('');
+
+      try {
+        const response = await fetch(HOME_PRODUCTS_API_URL, {
+          signal: controller.signal,
+          headers: {
+            Accept: 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Request failed: ${response.status}`);
+        }
+
+        const json = await response.json();
+        if (!Array.isArray(json)) {
+          throw new Error('Invalid response format');
+        }
+
+        const normalized = json
+          .map((item, index) => ({
+            id: item.id ?? index + 1,
+            name: String(item.name || 'Unnamed product').trim(),
+            image: String(item.image || '').trim(),
+            price: Number(item.price) || 0,
+          }))
+          .filter((item) => item.name)
+          .slice(0, 5);
+
+        if (isMounted) {
+          setProducts(normalized);
+        }
+      } catch {
+        if (isMounted) {
+          setProducts([]);
+          setLoadError('Unable to load deals from /api/featured_products');
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadProducts();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, []);
 
   return (
     <section className="bg-white border border-[#DEE2E7] rounded-lg mt-6 flex overflow-hidden">
@@ -34,21 +86,44 @@ const Deals = ({ setPage }) => {
 
       {/* Deals Grid */}
       <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 h-full">
-        {deals.map((deal, index) => (
+        {isLoading && (
+          <div className="col-span-full p-6 text-sm text-[#505050]">
+            Loading products...
+          </div>
+        )}
+
+        {loadError && !isLoading && (
+          <div className="col-span-full p-6 text-sm text-[#D4380D]">
+            {loadError}
+          </div>
+        )}
+
+        {!isLoading && !loadError && products.map((product) => (
           <div
-            key={index}
+            key={product.id}
             className="p-6 flex flex-col items-center justify-center text-center border-r border-b lg:border-b-0 last:border-r-0 border-[#DEE2E7] cursor-pointer hover:shadow-[0px_8px_20px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-300 group"
-            onClick={() => setPage('details')}
+            onClick={() => {
+              if (!product.id) {
+                return;
+              }
+              window.location.href = `${PRODUCT_DETAILS_BASE_URL}/${product.id}`;
+            }}
           >
             <div className="w-full aspect-square bg-[#F7F7F7] rounded-md flex items-center justify-center mb-4 overflow-hidden p-2">
-              <img src={deal.image} alt={deal.name} className="max-w-[90%] max-h-[90%] object-contain group-hover:scale-110 transition-transform duration-300" />
+              <img src={product.image} alt={product.name} className="max-w-[90%] max-h-[90%] object-contain group-hover:scale-110 transition-transform duration-300" />
             </div>
-            <p className="text-[#1C1C1C] text-sm mb-2">{deal.name}</p>
-            <span className="bg-[#FFE3E3] text-[#EB001B] px-3 py-1 rounded-full text-xs font-bold">
-              {deal.discount}
+            <p className="text-[#1C1C1C] text-sm mb-2">{product.name}</p>
+            <span className="bg-[#E5F1FF] text-[#0D6EFD] px-3 py-1 rounded-full text-xs font-bold">
+              ${product.price}
             </span>
           </div>
         ))}
+
+        {!isLoading && !loadError && products.length === 0 && (
+          <div className="col-span-full p-6 text-sm text-[#505050]">
+            No products available.
+          </div>
+        )}
       </div>
     </section>
   );

@@ -1,50 +1,114 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-// Import some images for recommendations
-import shirtImg from '../assets/Image/interior/1.png';
-import shortImg from '../assets/Image/interior/3.png';
-import coatImg from '../assets/Image/interior/6.png';
-import bagImg from '../assets/Image/tech/image 23.png';
-import walletImg from '../assets/Image/interior/7.png';
-import cameraImg from '../assets/Image/tech/image 29.png';
-import headsetImg from '../assets/Image/tech/image 32.png';
-import smartWatchImg from '../assets/Image/tech/8.png';
-import cupImg from '../assets/Image/interior/9.png';
-import blenderImg from '../assets/Image/interior/8.png';
+const RECOMMENDED_PRODUCTS_URL = '/api/recommended_products';
+const PRODUCT_DETAILS_BASE_URL = 'http://127.0.0.1:8000/products';
 
 const RecommendedItems = () => {
-  const items = [
-    { price: "10.30", desc: "T-shirts with multiple colors, for men", image: shirtImg },
-    { price: "10.30", desc: "Jeans shorts for men blue color", image: shortImg },
-    { price: "12.50", desc: "Brown winter coat medium size", image: coatImg },
-    { price: "34.00", desc: "Jeans bag for travel for men", image: bagImg },
-    { price: "99.00", desc: "Leather wallet", image: walletImg },
-    { price: "9.99", desc: "Canon camera 20x zoom, silver color", image: cameraImg },
-    { price: "8.99", desc: "Headset for gaming with mic", image: headsetImg },
-    { price: "10.30", desc: "Smart watch silver color", image: smartWatchImg },
-    { price: "10.30", desc: "Blue wallet for men", image: cupImg },
-    { price: "80.00", desc: "Leather bag for travel", image: blenderImg },
-  ];
+  const [items, setItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState('');
+
+  useEffect(() => {
+    let isMounted = true;
+    const controller = new AbortController();
+
+    const loadRecommended = async () => {
+      setIsLoading(true);
+      setLoadError('');
+
+      try {
+        const response = await fetch(RECOMMENDED_PRODUCTS_URL, {
+          signal: controller.signal,
+          headers: {
+            Accept: 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Request failed: ${response.status}`);
+        }
+
+        const json = await response.json();
+        if (!Array.isArray(json)) {
+          throw new Error('Invalid response format');
+        }
+
+        const normalized = json
+          .map((item, index) => ({
+            id: item.id ?? index + 1,
+            price: Number(item.price) || 0,
+            desc: String(item.name || item.desc || 'Unnamed product').trim(),
+            image: String(item.image || '').trim(),
+          }))
+          .filter((item) => item.desc);
+
+        if (isMounted) {
+          setItems(normalized);
+        }
+      } catch {
+        if (isMounted) {
+          setItems([]);
+          setLoadError('Unable to load recommended products from /api/recommended_products');
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadRecommended();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, []);
 
   return (
     <section className="mt-8">
       <h3 className="text-2xl font-bold mb-6">Recommended items</h3>
+
+      {isLoading && (
+        <div className="bg-white border border-[#DEE2E7] rounded-lg p-4 mb-4 text-sm text-[#505050]">
+          Loading recommended products...
+        </div>
+      )}
+
+      {loadError && !isLoading && (
+        <div className="bg-white border border-[#DEE2E7] rounded-lg p-4 mb-4 text-sm text-[#D4380D]">
+          {loadError}
+        </div>
+      )}
+
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
         {items.map((item, index) => (
           <div
-            key={index}
+            key={item.id ?? index}
             className="bg-white border border-[#DEE2E7] rounded-lg p-4 flex flex-col hover:shadow-[0px_10px_25px_rgba(0,0,0,0.1)] hover:-translate-y-2 transition-all duration-300 cursor-pointer group h-full"
+            onClick={() => {
+              if (!item.id) {
+                return;
+              }
+              window.location.href = `${PRODUCT_DETAILS_BASE_URL}/${item.id}`;
+            }}
           >
             <div className="flex-1 flex items-center justify-center p-4 mb-3">
               <img src={item.image} alt={item.desc} className="max-h-[140px] w-auto object-contain group-hover:scale-110 transition-transform duration-300" />
             </div>
             <div className="mt-auto">
-              <p className="font-medium text-[#1C1C1C] text-lg mb-1">${item.price}</p>
-              <p className="text-[#8B96A5] text-[15px] overflow-hidden text-ellipsis line-clamp-2 leading-snug">{item.desc}</p>
+              <p className="text-[#8B96A5] text-[15px] overflow-hidden text-ellipsis line-clamp-2 leading-snug mb-1">{item.desc}</p>
+              <p className="font-medium text-[#1C1C1C] text-lg">${item.price.toFixed(2)}</p>
             </div>
           </div>
         ))}
       </div>
+
+      {!isLoading && !loadError && items.length === 0 && (
+        <div className="bg-white border border-[#DEE2E7] rounded-lg p-4 mt-4 text-sm text-[#505050]">
+          No recommended products available.
+        </div>
+      )}
     </section>
   );
 };

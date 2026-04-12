@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import Deals from './components/Deals';
@@ -15,6 +16,9 @@ import Cart from './components/Cart';
 import Profile from './components/Profile';
 import Messages from './components/Messages';
 import Orders from './components/Orders';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import AddProductPage from './pages/AddProductPage';
 
 // Category Banner Images
 import homeBanner from './assets/Image/backgrounds/image 98.png';
@@ -25,103 +29,206 @@ import itemH1 from './assets/Image/interior/1.png';
 import itemH2 from './assets/Image/interior/3.png';
 import itemH3 from './assets/Image/interior/6.png';
 import itemH4 from './assets/Image/interior/7.png';
-import itemH5 from './assets/Image/interior/8.png';
-import itemH6 from './assets/Image/interior/9.png';
-import itemH7 from './assets/Image/interior/image 89.png';
-import itemH8 from './assets/Image/interior/image 93.png';
 
 // Electronics Images
 import itemE1 from './assets/Image/tech/8.png';
 import itemE2 from './assets/Image/tech/image 85.png';
 import itemE3 from './assets/Image/tech/image 32.png';
 import itemE4 from './assets/Image/tech/image 33.png';
-import itemE5 from './assets/Image/tech/image 34.png';
-import itemE6 from './assets/Image/tech/image 23.png';
-import itemE7 from './assets/Image/tech/image 86.png';
-import itemE8 from './assets/Image/tech/6.png';
 
-function App() {
-  const [currentPage, setCurrentPage] = useState('home');
+const PRODUCT_DETAILS_BASE_URL = 'http://127.0.0.1:8000/products';
 
-  const homeAndOutdoorItems = [
-    { name: "Soft chairs", price: "19", image: itemH1 },
-    { name: "Sofa & chair", price: "19", image: itemH2 },
-    { name: "Kitchen dishes", price: "19", image: itemH3 },
-    { name: "Smart watches", price: "19", image: itemH4 },
-    { name: "Kitchen mixer", price: "100", image: itemH5 },
-    { name: "Blenders", price: "39", image: itemH6 },
-    { name: "Home appliance", price: "19", image: itemH7 },
-    { name: "Coffee maker", price: "10", image: itemH8 },
+const HomePage = ({ setPage }) => {
+  const fallbackHomeAndOutdoorItems = [
+    { name: 'Soft chairs', price: '19', image: itemH1 },
+    { name: 'Sofa & chair', price: '19', image: itemH2 },
+    { name: 'Kitchen dishes', price: '19', image: itemH3 },
+    { name: 'Smart watches', price: '19', image: itemH4 },
   ];
 
-  const electronicsItems = [
-    { name: "Smart watches", price: "19", image: itemE1 },
-    { name: "Cameras", price: "89", image: itemE2 },
-    { name: "Headphones", price: "10", image: itemE3 },
-    { name: "Smartphones", price: "19", image: itemE4 },
-    { name: "Gaming set", price: "35", image: itemE5 },
-    { name: "Laptop & PC", price: "340", image: itemE6 },
-    { name: "Smartphones", price: "19", image: itemE7 },
-    { name: "Electric kettle", price: "240", image: itemE8 },
+  const fallbackTechItems = [
+    { name: 'Smart watches', price: '19', image: itemE1 },
+    { name: 'Cameras', price: '89', image: itemE2 },
+    { name: 'Headphones', price: '10', image: itemE3 },
+    { name: 'Smartphones', price: '19', image: itemE4 },
   ];
 
-  const renderContent = () => {
-    switch (currentPage) {
-      case 'listing':
-        return <ProductListing setPage={setCurrentPage} />;
+  const [homeAndOutdoorItems, setHomeAndOutdoorItems] = useState(fallbackHomeAndOutdoorItems);
+  const [techItems, setTechItems] = useState(fallbackTechItems);
+
+  useEffect(() => {
+    let isMounted = true;
+    const controller = new AbortController();
+
+    const normalizeProducts = (products, fallback) => {
+      if (!Array.isArray(products)) {
+        return fallback;
+      }
+
+      const normalized = products
+        .map((item, index) => ({
+          id: item.id ?? null,
+          name: String(item.name || `Product ${index + 1}`).trim(),
+          price: Number(item.price) || 0,
+          image: String(item.image || '').trim(),
+        }))
+        .filter((item) => item.name)
+        .slice(0, 4);
+
+      return normalized.length ? normalized : fallback;
+    };
+
+    const loadProductsByType = async (type, setter, fallback) => {
+      try {
+        const response = await fetch(`/api/products_by_type/${type}`, {
+          signal: controller.signal,
+          headers: {
+            Accept: 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Request failed: ${response.status}`);
+        }
+
+        const json = await response.json();
+        if (isMounted) {
+          setter(normalizeProducts(json, fallback));
+        }
+      } catch {
+        if (isMounted) {
+          setter(fallback);
+        }
+      }
+    };
+
+    loadProductsByType('home_outdoor', setHomeAndOutdoorItems, fallbackHomeAndOutdoorItems);
+    loadProductsByType('tech', setTechItems, fallbackTechItems);
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, []);
+
+  return (
+    <div className="container">
+      <Hero setPage={setPage} />
+      <Deals setPage={setPage} />
+
+      <CategorySection
+        title="Home & outdoor"
+        bannerBg="#FFE6BF"
+        bannerImg={homeBanner}
+        items={homeAndOutdoorItems}
+        onItemClick={(item) => {
+          if (!item?.id) {
+            return;
+          }
+          window.location.href = `${PRODUCT_DETAILS_BASE_URL}/${item.id}`;
+        }}
+      />
+
+      <CategorySection
+        title="Tech"
+        bannerBg="#E5F1FF"
+        bannerImg={electronicsBanner}
+        items={techItems}
+        onItemClick={(item) => {
+          if (!item?.id) {
+            return;
+          }
+          window.location.href = `${PRODUCT_DETAILS_BASE_URL}/${item.id}`;
+        }}
+      />
+
+      <div className="mt-4 flex justify-center">
+        <a
+          href="http://127.0.0.1:8000/products"
+          className="inline-flex items-center rounded-md bg-primary px-5 py-2.5 text-white text-sm font-semibold hover:opacity-90 transition-opacity"
+        >
+          View all products
+        </a>
+      </div>
+
+      <InquiryForm />
+      <RecommendedItems />
+      <Services />
+      <RegionSuppliers />
+    </div>
+  );
+};
+
+const AppLayout = () => {
+  const navigate = useNavigate();
+
+  const setPage = (page, payload) => {
+    switch (page) {
+      case 'home':
+        navigate('/');
+        break;
+      case 'listing': {
+        const q = payload?.q?.trim();
+        navigate(q ? `/products?q=${encodeURIComponent(q)}` : '/products');
+        break;
+      }
       case 'details':
-        return <ProductDetails setPage={setCurrentPage} />;
+        navigate(`/products/${payload?.id || payload || 1}`);
+        break;
       case 'cart':
-        return <Cart setPage={setCurrentPage} />;
+        navigate('/cart');
+        break;
       case 'profile':
-        return <Profile setPage={setCurrentPage} />;
+        navigate('/profile');
+        break;
       case 'message':
-        return <Messages setPage={setCurrentPage} />;
+        navigate('/messages');
+        break;
       case 'orders':
-        return <Orders setPage={setCurrentPage} />;
+        navigate('/orders');
+        break;
+      case 'login':
+        navigate('/login');
+        break;
+      case 'signup':
+        navigate('/signup');
+        break;
+      case 'add-product':
+        navigate('/add-product');
+        break;
       default:
-        return (
-          <div className="container">
-            <Hero />
-            <Deals />
-
-            <CategorySection
-              title="Home and outdoor"
-              bannerBg="#FFE6BF"
-              bannerImg={homeBanner}
-              items={homeAndOutdoorItems}
-              setPage={setCurrentPage}
-            />
-
-            <CategorySection
-              title="Consumer electronics"
-              bannerBg="#E5F1FF"
-              bannerImg={electronicsBanner}
-              items={electronicsItems}
-              setPage={setCurrentPage}
-            />
-
-            <InquiryForm />
-            <RecommendedItems setPage={setCurrentPage} />
-            <Services />
-            <RegionSuppliers />
-          </div>
-        );
+        navigate('/');
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header setPage={setCurrentPage} />
+      <Header setPage={setPage} />
 
       <main className="flex-grow pb-12">
-        {renderContent()}
+        <Routes>
+          <Route path="/" element={<HomePage setPage={setPage} />} />
+          <Route path="/products" element={<ProductListing setPage={setPage} />} />
+          <Route path="/products/:id" element={<ProductDetails setPage={setPage} />} />
+          <Route path="/cart" element={<Cart setPage={setPage} />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/messages" element={<Messages />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/add-product" element={<AddProductPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
 
       <Newsletter />
       <Footer />
     </div>
   );
+};
+
+function App() {
+  return <AppLayout />;
 }
 
 export default App;

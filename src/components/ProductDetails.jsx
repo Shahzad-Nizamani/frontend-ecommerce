@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { Star, Heart, MessageSquare, ShoppingBag, ShieldCheck, Globe, ChevronRight, ChevronDown, Check } from 'lucide-react';
 
 // Main Product Image
@@ -8,10 +9,13 @@ import thumb2 from '../assets/Image/tech/image 32.png';
 import thumb3 from '../assets/Image/tech/6.png';
 import thumb4 from '../assets/Image/tech/8.png';
 import flagDE from '../assets/Layout1/Image/flags/DE@2x.png';
+import { getProductById, products } from '../data/products';
 
 const ProductDetails = ({ setPage }) => {
+   const { id } = useParams();
+   const product = getProductById(id) || products[0];
    const [selectedThumb, setSelectedThumb] = useState(0);
-   const thumbnails = [mainImg, thumb1, thumb2, thumb3, thumb4];
+   const thumbnails = useMemo(() => [product.image, mainImg, thumb1, thumb2, thumb3, thumb4], [product.image]);
 
    return (
       <div className="container py-4">
@@ -53,14 +57,14 @@ const ProductDetails = ({ setPage }) => {
                   <span className="text-sm font-medium">In stock</span>
                </div>
                <h1 className="text-xl lg:text-2xl font-bold text-[#1C1C1C] mb-4">
-                  Mens Long Sleeve T-shirt Cotton Base Layer Slim Muscle
+                  {product.name}
                </h1>
 
                {/* Ratings & Orders */}
                <div className="flex items-center gap-4 mb-4">
                   <div className="flex items-center gap-1">
-                     {[5, 4, 3, 2, 1].map((s, i) => <Star key={i} size={16} className={i < 4 ? "fill-[#FF9017] text-[#FF9017]" : "text-[#D1D3D3]"} />)}
-                     <span className="text-[#FF9017] text-sm ml-1">4.5</span>
+                     {[5, 4, 3, 2, 1].map((s, i) => <Star key={i} size={16} className={i < Math.round(product.rating) ? "fill-[#FF9017] text-[#FF9017]" : "text-[#D1D3D3]"} />)}
+                     <span className="text-[#FF9017] text-sm ml-1">{product.rating.toFixed(1)}</span>
                   </div>
                   <div className="flex items-center gap-1 text-[#8B96A5] text-sm">
                      <MessageSquare size={16} />
@@ -68,24 +72,24 @@ const ProductDetails = ({ setPage }) => {
                   </div>
                   <div className="flex items-center gap-1 text-[#8B96A5] text-sm">
                      <ShoppingBag size={16} />
-                     <span>154 sold</span>
+                     <span>{product.orders} sold</span>
                   </div>
                </div>
 
                {/* Pricing Block */}
                <div className="bg-[#FFF0DF] p-4 rounded-lg flex flex-wrap gap-8 items-center mb-6">
                   <div className="flex flex-col">
-                     <span className="text-xl lg:text-3xl font-bold text-[#FA3434]">$98.00</span>
+                     <span className="text-xl lg:text-3xl font-bold text-[#FA3434]">${product.price.toFixed(2)}</span>
                      <span className="text-xs text-[#505050]">50-100 pcs</span>
                   </div>
                   <div className="h-10 w-[1px] bg-[#DEE2E7] hidden lg:block"></div>
                   <div className="flex flex-col">
-                     <span className="text-lg lg:text-2xl font-bold text-[#1C1C1C]">$90.00</span>
+                     <span className="text-lg lg:text-2xl font-bold text-[#1C1C1C]">${(product.price * 0.93).toFixed(2)}</span>
                      <span className="text-xs text-[#505050]">100-700 pcs</span>
                   </div>
                   <div className="h-10 w-[1px] bg-[#DEE2E7] hidden lg:block"></div>
                   <div className="flex flex-col">
-                     <span className="text-lg lg:text-2xl font-bold text-[#1C1C1C]">$78.00</span>
+                     <span className="text-lg lg:text-2xl font-bold text-[#1C1C1C]">${(product.price * 0.85).toFixed(2)}</span>
                      <span className="text-xs text-[#505050]">700+ pcs</span>
                   </div>
                </div>
@@ -98,7 +102,7 @@ const ProductDetails = ({ setPage }) => {
                   </div>
                   <div className="grid grid-cols-3 lg:grid-cols-4 gap-4 text-sm border-t border-[#DEE2E7] pt-4">
                      <span className="text-[#8B96A5]">Type:</span>
-                     <span className="col-span-2 lg:col-span-3 text-[#505050]">Classic shoe</span>
+                     <span className="col-span-2 lg:col-span-3 text-[#505050]">{product.category}</span>
                   </div>
                   <div className="grid grid-cols-3 lg:grid-cols-4 gap-4 text-sm border-t border-[#DEE2E7] pt-4">
                      <span className="text-[#8B96A5]">Material:</span>
@@ -106,7 +110,7 @@ const ProductDetails = ({ setPage }) => {
                   </div>
                   <div className="grid grid-cols-3 lg:grid-cols-4 gap-4 text-sm border-t border-[#DEE2E7] pt-4">
                      <span className="text-[#8B96A5]">Design:</span>
-                     <span className="col-span-2 lg:col-span-3 text-[#505050]">Modern design</span>
+                     <span className="col-span-2 lg:col-span-3 text-[#505050]">Modern design for daily usage</span>
                   </div>
                </div>
 
