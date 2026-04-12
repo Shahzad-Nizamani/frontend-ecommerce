@@ -36,7 +36,7 @@ import itemE2 from './assets/Image/tech/image 85.png';
 import itemE3 from './assets/Image/tech/image 32.png';
 import itemE4 from './assets/Image/tech/image 33.png';
 
-const PRODUCT_DETAILS_BASE_URL = 'http://127.0.0.1:8000/products';
+const PRODUCT_DETAILS_BASE_URL = 'http://157.230.254.81:8001/products';
 
 const HomePage = ({ setPage }) => {
   const fallbackHomeAndOutdoorItems = [
@@ -144,7 +144,7 @@ const HomePage = ({ setPage }) => {
 
       <div className="mt-4 flex justify-center">
         <a
-          href="http://127.0.0.1:8000/products"
+          href="http://157.230.254.81:8001/products"
           className="inline-flex items-center rounded-md bg-primary px-5 py-2.5 text-white text-sm font-semibold hover:opacity-90 transition-opacity"
         >
           View all products

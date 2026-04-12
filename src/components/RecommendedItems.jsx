@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 const RECOMMENDED_PRODUCTS_URL = '/api/recommended_products';
-const PRODUCT_DETAILS_BASE_URL = 'http://127.0.0.1:8000/products';
+const PRODUCT_DETAILS_BASE_URL = 'http://157.230.254.81:8001/products';
 
 const RecommendedItems = () => {
   const [items, setItems] = useState([]);
