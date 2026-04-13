@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { buildApiUrl, PRODUCT_DETAILS_BASE_URL } from '../config/api';
+import { useNavigate } from 'react-router-dom';
+import { buildApiUrl } from '../config/api';
 
 const RECOMMENDED_PRODUCTS_URL = buildApiUrl('/recommended_products');
 
-const RecommendedItems = () => {
+const RecommendedItems = ({ setPage }) => {
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     let isMounted = true;
@@ -90,7 +92,11 @@ const RecommendedItems = () => {
               if (!item.id) {
                 return;
               }
-              window.location.href = `${PRODUCT_DETAILS_BASE_URL}/${item.id}`;
+              if (setPage) {
+                setPage('details', { id: item.id });
+                return;
+              }
+              navigate(`/products/${item.id}`);
             }}
           >
             <div className="flex-1 flex items-center justify-center p-4 mb-3">

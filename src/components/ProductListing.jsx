@@ -48,13 +48,13 @@ const ProductListing = ({ setPage }) => {
             name: String(item.name || `Product ${index + 1}`).trim(),
             price: Number(item.price) || 0,
             oldPrice: null,
-            category: 'featured',
+            category: String(item.category || item.product_type || item.type || 'general').trim(),
             image: String(item.image || '').trim(),
-            description: 'Featured product from local API.',
-            stock: 0,
-            rating: 4.5,
-            orders: 0,
-            shipping: 'Standard shipping',
+            description: String(item.description || item.details || item.summary || 'Product from backend catalog.').trim(),
+            stock: Number(item.stock ?? item.quantity ?? 0),
+            rating: Number(item.rating) || 4.5,
+            orders: Number(item.orders) || 0,
+            shipping: String(item.shipping || 'Standard shipping').trim(),
           }))
           .filter((item) => item.name);
 

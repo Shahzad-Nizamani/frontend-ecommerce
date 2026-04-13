@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { buildApiUrl, PRODUCT_DETAILS_BASE_URL } from '../config/api';
+import { useNavigate } from 'react-router-dom';
+import { buildApiUrl } from '../config/api';
 
 const HOME_PRODUCTS_API_URL = buildApiUrl('/featured_products');
 
-const Deals = () => {
+const Deals = ({ setPage }) => {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     let isMounted = true;
@@ -106,7 +108,11 @@ const Deals = () => {
               if (!product.id) {
                 return;
               }
-              window.location.href = `${PRODUCT_DETAILS_BASE_URL}/${product.id}`;
+              if (setPage) {
+                setPage('details', { id: product.id });
+                return;
+              }
+              navigate(`/products/${product.id}`);
             }}
           >
             <div className="w-full aspect-square bg-[#F7F7F7] rounded-md flex items-center justify-center mb-4 overflow-hidden p-2">

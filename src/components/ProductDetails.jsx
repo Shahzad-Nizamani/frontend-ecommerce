@@ -1,21 +1,89 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Star, Heart, MessageSquare, ShoppingBag, ShieldCheck, Globe, ChevronRight, ChevronDown, Check } from 'lucide-react';
-
-// Main Product Image
+import { Star, Heart, MessageSquare, ShoppingBag, ShieldCheck, Globe, ChevronRight, Check } from 'lucide-react';
 import mainImg from '../assets/Image/tech/image 34.png';
 import thumb1 from '../assets/Image/tech/image 33.png';
 import thumb2 from '../assets/Image/tech/image 32.png';
 import thumb3 from '../assets/Image/tech/6.png';
 import thumb4 from '../assets/Image/tech/8.png';
 import flagDE from '../assets/Layout1/Image/flags/DE@2x.png';
-import { getProductById, products } from '../data/products';
+import { buildApiUrl } from '../config/api';
+
+const PRODUCTS_URL = buildApiUrl('/products');
+
+const normalizeProduct = (item, fallbackId) => ({
+   id: item?.id ?? fallbackId,
+   name: String(item?.name || `Product ${fallbackId}`).trim(),
+   price: Number(item?.price) || 0,
+   category: String(item?.category || item?.product_type || item?.type || 'General').trim(),
+   image: String(item?.image || '').trim() || mainImg,
+   description: String(item?.description || item?.details || item?.summary || 'Product details are not available right now.').trim(),
+   stock: Number(item?.stock ?? item?.quantity ?? 0),
+   rating: Number(item?.rating) || 4.2,
+   orders: Number(item?.orders) || 0,
+});
 
 const ProductDetails = ({ setPage }) => {
    const { id } = useParams();
-   const product = getProductById(id) || products[0];
+   const [product, setProduct] = useState(() => normalizeProduct(null, id));
+   const [isLoading, setIsLoading] = useState(true);
+   const [loadError, setLoadError] = useState('');
    const [selectedThumb, setSelectedThumb] = useState(0);
    const thumbnails = useMemo(() => [product.image, mainImg, thumb1, thumb2, thumb3, thumb4], [product.image]);
+
+   useEffect(() => {
+      let isMounted = true;
+      const controller = new AbortController();
+
+      const loadProduct = async () => {
+         setIsLoading(true);
+         setLoadError('');
+
+         try {
+            const response = await fetch(PRODUCTS_URL, {
+               signal: controller.signal,
+               headers: {
+                  Accept: 'application/json',
+               },
+            });
+
+            if (!response.ok) {
+               throw new Error(`Request failed: ${response.status}`);
+            }
+
+            const json = await response.json();
+            if (!Array.isArray(json)) {
+               throw new Error('Invalid response format');
+            }
+
+            const matched = json.find((item) => String(item.id) === String(id));
+            if (!matched) {
+               throw new Error('Product not found');
+            }
+
+            if (isMounted) {
+               setProduct(normalizeProduct(matched, id));
+               setSelectedThumb(0);
+            }
+         } catch {
+            if (isMounted) {
+               setProduct(normalizeProduct(null, id));
+               setLoadError('Unable to load this product from the backend.');
+            }
+         } finally {
+            if (isMounted) {
+               setIsLoading(false);
+            }
+         }
+      };
+
+      loadProduct();
+
+      return () => {
+         isMounted = false;
+         controller.abort();
+      };
+   }, [id]);
 
    return (
       <div className="container py-4">
@@ -23,12 +91,24 @@ const ProductDetails = ({ setPage }) => {
          <div className="flex items-center gap-2 text-[#8B96A5] text-sm mb-6">
             <span className="cursor-pointer hover:text-primary transition-colors" onClick={() => setPage('home')}>Home</span>
             <ChevronRight className="w-4 h-4" />
-            <span className="cursor-pointer hover:text-primary transition-colors">Clothings</span>
+            <span className="cursor-pointer hover:text-primary transition-colors" onClick={() => setPage('listing')}>Products</span>
             <ChevronRight className="w-4 h-4" />
-            <span className="cursor-pointer hover:text-primary transition-colors">Men's wear</span>
+            <span className="cursor-pointer hover:text-primary transition-colors">{product.category}</span>
             <ChevronRight className="w-4 h-4" />
-            <span className="text-[#1C1C1C] font-normal">Summer clothing</span>
+            <span className="text-[#1C1C1C] font-normal">{product.name}</span>
          </div>
+
+         {isLoading && (
+            <div className="bg-white border border-[#DEE2E7] rounded-lg p-4 mb-6 text-sm text-[#505050]">
+               Loading product details...
+            </div>
+         )}
+
+         {loadError && !isLoading && (
+            <div className="bg-white border border-[#DEE2E7] rounded-lg p-4 mb-6 text-sm text-[#D4380D]">
+               {loadError}
+            </div>
+         )}
 
          {/* Main Content Card */}
          <div className="bg-white border border-[#DEE2E7] rounded-lg p-5 lg:p-8 flex flex-col lg:flex-row gap-8 mb-8 shadow-sm">
@@ -54,7 +134,7 @@ const ProductDetails = ({ setPage }) => {
             <div className="flex-1">
                <div className="flex items-center gap-2 text-[#00B517] mb-2">
                   <Check size={20} />
-                  <span className="text-sm font-medium">In stock</span>
+                  <span className="text-sm font-medium">{product.stock > 0 ? 'In stock' : 'Check availability'}</span>
                </div>
                <h1 className="text-xl lg:text-2xl font-bold text-[#1C1C1C] mb-4">
                   {product.name}
@@ -68,11 +148,11 @@ const ProductDetails = ({ setPage }) => {
                   </div>
                   <div className="flex items-center gap-1 text-[#8B96A5] text-sm">
                      <MessageSquare size={16} />
-                     <span>32 reviews</span>
+                     <span>{Math.max(12, product.orders || 12)} reviews</span>
                   </div>
                   <div className="flex items-center gap-1 text-[#8B96A5] text-sm">
                      <ShoppingBag size={16} />
-                     <span>{product.orders} sold</span>
+                     <span>{product.orders || 0} sold</span>
                   </div>
                </div>
 
@@ -98,7 +178,7 @@ const ProductDetails = ({ setPage }) => {
                <div className="space-y-4 mb-8">
                   <div className="grid grid-cols-3 lg:grid-cols-4 gap-4 text-sm">
                      <span className="text-[#8B96A5]">Price:</span>
-                     <span className="col-span-2 lg:col-span-3 text-[#505050]">Negotiable</span>
+                     <span className="col-span-2 lg:col-span-3 text-[#505050]">${product.price.toFixed(2)}</span>
                   </div>
                   <div className="grid grid-cols-3 lg:grid-cols-4 gap-4 text-sm border-t border-[#DEE2E7] pt-4">
                      <span className="text-[#8B96A5]">Type:</span>
@@ -106,11 +186,11 @@ const ProductDetails = ({ setPage }) => {
                   </div>
                   <div className="grid grid-cols-3 lg:grid-cols-4 gap-4 text-sm border-t border-[#DEE2E7] pt-4">
                      <span className="text-[#8B96A5]">Material:</span>
-                     <span className="col-span-2 lg:col-span-3 text-[#505050]">Plastic material</span>
+                     <span className="col-span-2 lg:col-span-3 text-[#505050]">N/A</span>
                   </div>
                   <div className="grid grid-cols-3 lg:grid-cols-4 gap-4 text-sm border-t border-[#DEE2E7] pt-4">
                      <span className="text-[#8B96A5]">Design:</span>
-                     <span className="col-span-2 lg:col-span-3 text-[#505050]">Modern design for daily usage</span>
+                     <span className="col-span-2 lg:col-span-3 text-[#505050]">Standard</span>
                   </div>
                </div>
 
@@ -203,7 +283,7 @@ const ProductDetails = ({ setPage }) => {
                   </div>
                   <div className="p-6 lg:p-8">
                      <p className="text-[#505050] text-sm lg:text-base leading-relaxed mb-6">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                        {product.description}
                      </p>
                      <table className="w-full text-sm lg:text-base mb-8 rounded overflow-hidden border-collapse">
                         <tbody>

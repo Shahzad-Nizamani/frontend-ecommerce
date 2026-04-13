@@ -19,7 +19,7 @@ import Orders from './components/Orders';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import AddProductPage from './pages/AddProductPage';
-import { buildApiUrl, PRODUCT_DETAILS_BASE_URL } from './config/api';
+import { buildApiUrl } from './config/api';
 
 // Category Banner Images
 import homeBanner from './assets/Image/backgrounds/image 98.png';
@@ -124,7 +124,7 @@ const HomePage = ({ setPage }) => {
           if (!item?.id) {
             return;
           }
-          window.location.href = `${PRODUCT_DETAILS_BASE_URL}/${item.id}`;
+          setPage('details', { id: item.id });
         }}
       />
 
@@ -137,13 +137,13 @@ const HomePage = ({ setPage }) => {
           if (!item?.id) {
             return;
           }
-          window.location.href = `${PRODUCT_DETAILS_BASE_URL}/${item.id}`;
+          setPage('details', { id: item.id });
         }}
       />
 
       <div className="mt-4 flex justify-center">
         <a
-          href={PRODUCT_DETAILS_BASE_URL}
+          href="/products"
           className="inline-flex items-center rounded-md bg-primary px-5 py-2.5 text-white text-sm font-semibold hover:opacity-90 transition-opacity"
         >
           View all products
@@ -151,7 +151,7 @@ const HomePage = ({ setPage }) => {
       </div>
 
       <InquiryForm />
-      <RecommendedItems />
+      <RecommendedItems setPage={setPage} />
       <Services />
       <RegionSuppliers />
     </div>
@@ -168,11 +168,11 @@ const AppLayout = () => {
         break;
       case 'listing': {
         const q = payload?.q?.trim();
-        navigate(q ? `/products?q=${encodeURIComponent(q)}` : '/products');
+        window.location.assign(q ? `/products?q=${encodeURIComponent(q)}` : '/products');
         break;
       }
       case 'details':
-        navigate(`/products/${payload?.id || payload || 1}`);
+        window.location.assign(`/products/${payload?.id || payload || 1}`);
         break;
       case 'cart':
         navigate('/cart');
