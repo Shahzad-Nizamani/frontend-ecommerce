@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ChevronRight, Grid, List, ChevronDown, Star, Heart, X } from 'lucide-react';
 import { buildApiUrl } from '../config/api';
 
-const FEATURED_PRODUCTS_URL = buildApiUrl('/featured_products');
+const PRODUCTS_URL = buildApiUrl('/products');
 
 const ProductListing = ({ setPage }) => {
   const [viewMode, setViewMode] = useState('grid');
@@ -26,7 +26,7 @@ const ProductListing = ({ setPage }) => {
       setLoadError('');
 
       try {
-        const response = await fetch(FEATURED_PRODUCTS_URL, {
+        const response = await fetch(PRODUCTS_URL, {
           signal: controller.signal,
           headers: {
             Accept: 'application/json',
@@ -68,7 +68,7 @@ const ProductListing = ({ setPage }) => {
       } catch {
         if (isMounted) {
           setApiProducts([]);
-          setLoadError('Unable to load products from /api/featured_products');
+          setLoadError('Unable to load products from /api/products');
         }
       } finally {
         if (isMounted) {
