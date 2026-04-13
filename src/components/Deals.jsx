@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { buildApiUrl, PRODUCT_DETAILS_BASE_URL } from '../config/api';
 
-const HOME_PRODUCTS_API_URL = '/api/featured_products';
-const PRODUCT_DETAILS_BASE_URL = 'http://157.230.254.81:8001/products';
+const HOME_PRODUCTS_API_URL = buildApiUrl('/featured_products');
 
 const Deals = () => {
   const [products, setProducts] = useState([]);

@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ChevronRight, Grid, List, ChevronDown, Star, Heart, X } from 'lucide-react';
+import { buildApiUrl } from '../config/api';
 
-const FEATURED_PRODUCTS_URL = '/api/featured_products';
+const FEATURED_PRODUCTS_URL = buildApiUrl('/featured_products');
 
 const ProductListing = ({ setPage }) => {
   const [viewMode, setViewMode] = useState('grid');

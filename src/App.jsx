@@ -19,6 +19,7 @@ import Orders from './components/Orders';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import AddProductPage from './pages/AddProductPage';
+import { buildApiUrl, PRODUCT_DETAILS_BASE_URL } from './config/api';
 
 // Category Banner Images
 import homeBanner from './assets/Image/backgrounds/image 98.png';
@@ -35,8 +36,6 @@ import itemE1 from './assets/Image/tech/8.png';
 import itemE2 from './assets/Image/tech/image 85.png';
 import itemE3 from './assets/Image/tech/image 32.png';
 import itemE4 from './assets/Image/tech/image 33.png';
-
-const PRODUCT_DETAILS_BASE_URL = 'http://157.230.254.81:8001/products';
 
 const HomePage = ({ setPage }) => {
   const fallbackHomeAndOutdoorItems = [
@@ -80,7 +79,7 @@ const HomePage = ({ setPage }) => {
 
     const loadProductsByType = async (type, setter, fallback) => {
       try {
-        const response = await fetch(`/api/products_by_type/${type}`, {
+        const response = await fetch(buildApiUrl(`/products_by_type/${type}`), {
           signal: controller.signal,
           headers: {
             Accept: 'application/json',
@@ -144,7 +143,7 @@ const HomePage = ({ setPage }) => {
 
       <div className="mt-4 flex justify-center">
         <a
-          href="http://157.230.254.81:8001/products"
+          href={PRODUCT_DETAILS_BASE_URL}
           className="inline-flex items-center rounded-md bg-primary px-5 py-2.5 text-white text-sm font-semibold hover:opacity-90 transition-opacity"
         >
           View all products
