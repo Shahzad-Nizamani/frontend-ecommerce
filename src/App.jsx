@@ -143,7 +143,7 @@ const HomePage = ({ setPage }) => {
 
       <div className="mt-4 flex justify-center">
         <a
-          href="/products"
+          href="/product_listing"
           className="inline-flex items-center rounded-md bg-primary px-5 py-2.5 text-white text-sm font-semibold hover:opacity-90 transition-opacity"
         >
           View all products
@@ -168,11 +168,11 @@ const AppLayout = () => {
         break;
       case 'listing': {
         const q = payload?.q?.trim();
-        window.location.assign(q ? `/products?q=${encodeURIComponent(q)}` : '/products');
+        window.location.assign(q ? `/product_listing?q=${encodeURIComponent(q)}` : '/product_listing');
         break;
       }
       case 'details':
-        window.location.assign(`/products/${payload?.id || payload || 1}`);
+        window.location.assign(`/product_listing/${payload?.id || payload || 1}`);
         break;
       case 'cart':
         navigate('/cart');
@@ -207,8 +207,8 @@ const AppLayout = () => {
       <main className="flex-grow pb-12">
         <Routes>
           <Route path="/" element={<HomePage setPage={setPage} />} />
-          <Route path="/products" element={<ProductListing setPage={setPage} />} />
-          <Route path="/products/:id" element={<ProductDetails setPage={setPage} />} />
+          <Route path="/product_listing" element={<ProductListing setPage={setPage} />} />
+          <Route path="/product_listing/:id" element={<ProductDetails setPage={setPage} />} />
           <Route path="/cart" element={<Cart setPage={setPage} />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/messages" element={<Messages />} />
