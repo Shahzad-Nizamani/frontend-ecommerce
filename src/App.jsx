@@ -168,11 +168,11 @@ const AppLayout = () => {
         break;
       case 'listing': {
         const q = payload?.q?.trim();
-        window.location.assign(q ? `/products?q=${encodeURIComponent(q)}` : '/products');
+        navigate(q ? `/products?q=${encodeURIComponent(q)}` : '/products');
         break;
       }
       case 'details':
-        window.location.assign(`/products/${payload?.id || payload || 1}`);
+        navigate(`/products/${payload?.id || payload || 1}`);
         break;
       case 'cart':
         navigate('/cart');
