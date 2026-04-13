@@ -10,10 +10,6 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
-      '/products': {
-        target: 'http://157.230.254.81:8001',
-        changeOrigin: true,
-      },
       '/public': {
         target: 'http://157.230.254.81:8001',
         changeOrigin: true,
