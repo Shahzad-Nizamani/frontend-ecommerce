@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Search, User, MessageSquare, Heart, ShoppingCart, Menu, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { User, MessageSquare, Heart, ShoppingCart, Menu, ChevronDown } from 'lucide-react';
 import logo from '../assets/Layout/Brand/logo-colored.png';
 import flagDE from '../assets/Layout1/Image/flags/DE@2x.png';
 
@@ -7,75 +7,58 @@ const Header = ({ setPage }) => {
   const [query, setQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All category');
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
-  
-  const categories = [
-    'All category',
-    'Wearables',
-    'Fitness',
-    'Outdoor',
-    'Audio',
-    'Storage',
-    'Monitors',
-    'Laptops',
-    'Garden',
-    'Cameras',
-    'Accessories',
-    'Smart Home',
-    'Smartphones',
-    'Home',
-    'Networking',
-    'Gaming',
-    'Kitchen',
-    'Tablets',
-  ];
+  const [categories, setCategories] = useState(['All category']);
 
-  const handleSearch = () => {
+  useEffect(() => {
+    fetch('/api/categories')
+      .then(res => res.json())
+      .then(data => setCategories(['All category', ...data]))
+      .catch((err) => console.error('categories error:', err));
+  }, []);
+
+  const handleSearch = (cat = selectedCategory) => {
     const params = new URLSearchParams();
     if (query.trim()) params.append('q', query.trim());
-    if (selectedCategory !== 'All category') params.append('category', selectedCategory);
-    
+    if (cat !== 'All category') params.append('category', cat);
     const queryString = params.toString();
-    window.location.href = `http://157.230.254.81:8001/products${queryString ? '?' + queryString : '/'}`;
+    window.location.href = `/products${queryString ? '?' + queryString : ''}`;
   };
 
   return (
     <header className="bg-white border-b border-shade-border lg:sticky top-0 z-50 shadow-sm">
-      {/* Top Header */}
       <div className="container py-4 flex items-center justify-between gap-6">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => setPage('home')}>
           <img src={logo} alt="Brand" className="h-[46px]" />
         </div>
 
-        <div className="flex-1 max-w-2xl flex border-2 border-primary rounded-lg overflow-hidden">
+        <div className="flex-1 max-w-2xl flex border-2 border-primary rounded-lg relative">
           <input
             type="text"
             placeholder="Search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') handleSearch();
-            }}
+            onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
             className="flex-1 px-4 py-2 outline-none"
           />
           <div className="relative">
-            <div 
+            <div
               className="flex items-center border-l px-4 py-2 bg-white cursor-pointer hover:bg-gray-50"
               onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
             >
               <span className="text-sm">{selectedCategory}</span>
               <ChevronDown className="w-4 h-4 ml-2" />
             </div>
-            
+
             {showCategoryDropdown && (
-              <div className="absolute top-full left-0 right-0 bg-white border border-[#DEE2E7] shadow-lg z-50 max-h-64 overflow-y-auto">
+              <div className="fixed w-48 bg-white border border-[#DEE2E7] shadow-lg z-50 max-h-64 overflow-y-auto">
                 {categories.map((cat) => (
                   <div
                     key={cat}
                     className="px-4 py-2 text-sm cursor-pointer hover:bg-[#F7F7F7] transition-colors"
-                    onClick={() => {
-                      setSelectedCategory(cat);
-                      setShowCategoryDropdown(false);
-                    }}
+                      onClick={() => {
+                        setSelectedCategory(cat);
+                        setShowCategoryDropdown(false);
+                      }}
                   >
                     {cat}
                   </div>
@@ -85,7 +68,7 @@ const Header = ({ setPage }) => {
           </div>
           <button
             className="bg-primary hover:bg-primary-dark text-white px-8 py-2 font-medium transition-colors"
-            onClick={handleSearch}
+            onClick={() => handleSearch()}
           >
             Search
           </button>
@@ -112,7 +95,6 @@ const Header = ({ setPage }) => {
         </div>
       </div>
 
-      {/* Bottom Header */}
       <div className="border-t border-shade-border bg-white overflow-x-auto lg:overflow-visible no-scrollbar">
         <div className="container py-3 flex items-center justify-between whitespace-nowrap gap-4">
           <nav className="flex items-center gap-6 font-medium text-dark">
