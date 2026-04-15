@@ -1,24 +1,9 @@
 {
   "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "http://157.230.254.81:8001/:path*"
-    },
-    {
-      "source": "/public/:path*",
-      "destination": "http://157.230.254.81:8001/public/:path*"
-    },
-    {
-      "source": "/products/:path*",
-      "destination": "http://157.230.254.81:8001/products/:path*"
-    },
-    {
-      "source": "/products",
-      "destination": "http://157.230.254.81:8001/products"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/api/:path*", "destination": "http://157.230.254.81:8001/:path*" },
+    { "source": "/public/:path*", "destination": "http://157.230.254.81:8001/public/:path*" },
+    { "source": "/products/:id", "destination": "http://157.230.254.81:8001/products/:id" },
+    { "source": "/products", "destination": "http://157.230.254.81:8001/products" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
