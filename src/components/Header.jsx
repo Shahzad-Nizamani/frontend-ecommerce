@@ -5,9 +5,37 @@ import flagDE from '../assets/Layout1/Image/flags/DE@2x.png';
 
 const Header = ({ setPage }) => {
   const [query, setQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All category');
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  
+  const categories = [
+    'All category',
+    'Wearables',
+    'Fitness',
+    'Outdoor',
+    'Audio',
+    'Storage',
+    'Monitors',
+    'Laptops',
+    'Garden',
+    'Cameras',
+    'Accessories',
+    'Smart Home',
+    'Smartphones',
+    'Home',
+    'Networking',
+    'Gaming',
+    'Kitchen',
+    'Tablets',
+  ];
 
   const handleSearch = () => {
-    setPage('listing', { q: query });
+    const params = new URLSearchParams();
+    if (query.trim()) params.append('q', query.trim());
+    if (selectedCategory !== 'All category') params.append('category', selectedCategory);
+    
+    const queryString = params.toString();
+    window.location.href = `http://157.230.254.81:8001/products${queryString ? '?' + queryString : '/'}`;
   };
 
   return (
@@ -29,9 +57,31 @@ const Header = ({ setPage }) => {
             }}
             className="flex-1 px-4 py-2 outline-none"
           />
-          <div className="flex items-center border-l px-4 py-2 bg-white cursor-pointer hover:bg-gray-50">
-            <span className="text-sm">All category</span>
-            <ChevronDown className="w-4 h-4 ml-2" />
+          <div className="relative">
+            <div 
+              className="flex items-center border-l px-4 py-2 bg-white cursor-pointer hover:bg-gray-50"
+              onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+            >
+              <span className="text-sm">{selectedCategory}</span>
+              <ChevronDown className="w-4 h-4 ml-2" />
+            </div>
+            
+            {showCategoryDropdown && (
+              <div className="absolute top-full left-0 right-0 bg-white border border-[#DEE2E7] shadow-lg z-50 max-h-64 overflow-y-auto">
+                {categories.map((cat) => (
+                  <div
+                    key={cat}
+                    className="px-4 py-2 text-sm cursor-pointer hover:bg-[#F7F7F7] transition-colors"
+                    onClick={() => {
+                      setSelectedCategory(cat);
+                      setShowCategoryDropdown(false);
+                    }}
+                  >
+                    {cat}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <button
             className="bg-primary hover:bg-primary-dark text-white px-8 py-2 font-medium transition-colors"
