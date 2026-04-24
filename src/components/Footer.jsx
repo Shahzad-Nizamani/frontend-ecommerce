@@ -56,8 +56,8 @@ const Footer = () => {
           <div className="lg:col-span-2">
             <h4 className="font-bold text-[#1C1C1C] mb-4">For users</h4>
             <ul className="space-y-3 text-[#8B96A5] text-sm">
-              <li><a href="#" className="hover:text-primary transition-colors">Login</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Register</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); window.location.pathname = '/login'; }} className="hover:text-primary transition-colors">Login</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); window.location.pathname = '/signup'; }} className="hover:text-primary transition-colors">Register</a></li>
               <li><a href="#" className="hover:text-primary transition-colors">Settings</a></li>
               <li><a href="#" className="hover:text-primary transition-colors">My Orders</a></li>
             </ul>

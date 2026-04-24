@@ -18,6 +18,14 @@ export default defineConfig({
         target: 'http://157.230.254.81:8001',
         changeOrigin: true,
       },
+      '/auth': {
+        target: 'http://157.230.254.81:8001',
+        changeOrigin: true,
+      },
+      '/admin': {
+        target: 'http://157.230.254.81:8001',
+        changeOrigin: true,
+      },
     },
   },
 });

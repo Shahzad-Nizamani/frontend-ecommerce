@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { User, MessageSquare, Heart, ShoppingCart, Menu, ChevronDown } from 'lucide-react';
 import logo from '../assets/Layout/Brand/logo-colored.png';
 import flagDE from '../assets/Layout1/Image/flags/DE@2x.png';
+import { productAPI } from '../config/product';
 
 const Header = ({ setPage }) => {
   const [query, setQuery] = useState('');
@@ -10,8 +11,7 @@ const Header = ({ setPage }) => {
   const [categories, setCategories] = useState(['All category']);
 
   useEffect(() => {
-    fetch('/api/categories')
-      .then(res => res.json())
+    productAPI.getCategories()
       .then(data => setCategories(['All category', ...data]))
       .catch((err) => console.error('categories error:', err));
   }, []);
@@ -55,10 +55,10 @@ const Header = ({ setPage }) => {
                   <div
                     key={cat}
                     className="px-4 py-2 text-sm cursor-pointer hover:bg-[#F7F7F7] transition-colors"
-                      onClick={() => {
-                        setSelectedCategory(cat);
-                        setShowCategoryDropdown(false);
-                      }}
+                    onClick={() => {
+                      setSelectedCategory(cat);
+                      setShowCategoryDropdown(false);
+                    }}
                   >
                     {cat}
                   </div>
@@ -75,7 +75,7 @@ const Header = ({ setPage }) => {
         </div>
 
         <div className="flex items-center gap-6">
-          <button className="text-xs px-3 py-1.5 border border-[#DEE2E7] rounded-md hover:bg-shade" onClick={() => setPage('add-product')}>Add Product</button>
+          <a href="/admin/add-product" className="text-xs px-3 py-1.5 border border-[#DEE2E7] rounded-md hover:bg-shade">Add Product</a>
           <div className="flex flex-col items-center cursor-pointer text-secondary hover:text-primary transition-colors" onClick={() => setPage('profile')}>
             <User className="w-5 h-5 mb-1" />
             <span className="text-xs">Profile</span>
@@ -98,14 +98,14 @@ const Header = ({ setPage }) => {
       <div className="border-t border-shade-border bg-white overflow-x-auto lg:overflow-visible no-scrollbar">
         <div className="container py-3 flex items-center justify-between whitespace-nowrap gap-4">
           <nav className="flex items-center gap-6 font-medium text-dark">
-            <div className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors" onClick={() => setPage('listing')}>
+            <a href="/products" className="flex items-center gap-2 hover:text-primary transition-colors">
               <Menu className="w-5 h-5" />
               <span>All category</span>
-            </div>
-            <a href="#" className="hover:text-primary transition-colors" onClick={(e) => { e.preventDefault(); setPage('listing'); }}>Hot offers</a>
-            <a href="#" className="hover:text-primary transition-colors">Gift boxes</a>
-            <a href="#" className="hover:text-primary transition-colors" onClick={(e) => { e.preventDefault(); setPage('listing'); }}>Products</a>
-            <a href="#" className="hover:text-primary transition-colors">Menu item</a>
+            </a>
+            <a href="/products" className="hover:text-primary transition-colors">Hot offers</a>
+            <a href="/products" className="hover:text-primary transition-colors">Gift boxes</a>
+            <a href="/products" className="hover:text-primary transition-colors">Products</a>
+            <a href="/products" className="hover:text-primary transition-colors">Menu item</a>
             <div className="flex items-center gap-1 cursor-pointer hover:text-primary transition-colors">
               <span>Help</span>
               <ChevronDown className="w-4 h-4" />

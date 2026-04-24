@@ -19,7 +19,7 @@ import Orders from './components/Orders';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import AddProductPage from './pages/AddProductPage';
-import { buildApiUrl } from './config/api';
+import { productAPI } from './config/product';
 
 // Category Banner Images
 import homeBanner from './assets/Image/backgrounds/image 98.png';
@@ -79,18 +79,7 @@ const HomePage = ({ setPage }) => {
 
     const loadProductsByType = async (type, setter, fallback) => {
       try {
-        const response = await fetch(buildApiUrl(`/products_by_type/${type}`), {
-          signal: controller.signal,
-          headers: {
-            Accept: 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Request failed: ${response.status}`);
-        }
-
-        const json = await response.json();
+        const json = await productAPI.getProductsByType(type);
         if (isMounted) {
           setter(normalizeProducts(json, fallback));
         }

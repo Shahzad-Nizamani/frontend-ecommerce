@@ -7,9 +7,7 @@ import thumb2 from '../assets/Image/tech/image 32.png';
 import thumb3 from '../assets/Image/tech/6.png';
 import thumb4 from '../assets/Image/tech/8.png';
 import flagDE from '../assets/Layout1/Image/flags/DE@2x.png';
-import { buildApiUrl } from '../config/api';
-
-const PRODUCTS_URL = buildApiUrl('/products');
+import { productAPI } from '../config/product';
 
 const normalizeProduct = (item, fallbackId) => ({
    id: item?.id ?? fallbackId,
@@ -40,35 +38,36 @@ const ProductDetails = ({ setPage }) => {
          setLoadError('');
 
          try {
-            const response = await fetch(PRODUCTS_URL, {
-               signal: controller.signal,
-               headers: {
-                  Accept: 'application/json',
-               },
-            });
-
-            if (!response.ok) {
-               throw new Error(`Request failed: ${response.status}`);
-            }
-
-            const json = await response.json();
-            if (!Array.isArray(json)) {
-               throw new Error('Invalid response format');
-            }
-
-            const matched = json.find((item) => String(item.id) === String(id));
-            if (!matched) {
-               throw new Error('Product not found');
-            }
-
+            // Try to fetch specific product first
+            const specificProduct = await productAPI.getProductById(id);
+            
             if (isMounted) {
-               setProduct(normalizeProduct(matched, id));
+               setProduct(normalizeProduct(specificProduct, id));
                setSelectedThumb(0);
             }
-         } catch {
-            if (isMounted) {
-               setProduct(normalizeProduct(null, id));
-               setLoadError('Unable to load this product from the backend.');
+         } catch (specificError) {
+            // If specific product endpoint fails, try fetching all products
+            try {
+               const allProducts = await productAPI.getAllProducts();
+               
+               if (!Array.isArray(allProducts)) {
+                  throw new Error('Invalid response format');
+               }
+
+               const matched = allProducts.find((item) => String(item.id) === String(id));
+               if (!matched) {
+                  throw new Error('Product not found');
+               }
+
+               if (isMounted) {
+                  setProduct(normalizeProduct(matched, id));
+                  setSelectedThumb(0);
+               }
+            } catch {
+               if (isMounted) {
+                  setProduct(normalizeProduct(null, id));
+                  setLoadError('Unable to load this product from the backend.');
+               }
             }
          } finally {
             if (isMounted) {
